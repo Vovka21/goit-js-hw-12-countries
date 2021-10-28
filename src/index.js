@@ -77,6 +77,8 @@ function onSearch(e) {
 
   if (searchQuery.length === 0) {
     cardContainer.innerHTML = '';
+    delAlert();
+
   } else {
     fetchCountry(searchQuery)
       .then(addCountry)
