@@ -5,18 +5,26 @@ import * as PNotifyMobile from '@pnotify/mobile';
 
 const _ = require('lodash');
 
-// var debounce = require('debounce');
-// import { debounce } from 'debounce';
-
 import countryCardTpl from './country-card.hbs';
 
 const cardContainer = document.querySelector('.js-card-container');
 const input = document.querySelector('.input');
 
+// function fetchCountry(name) {
+//   return fetch(`https://restcountries.com/v2/name/${name}`).then(response => {
+//     return response.json();
+//   });
+// }
+
 function fetchCountry(name) {
-  return fetch(`https://restcountries.com/v2/name/${name}`).then(response => {
-    return response.json();
-  });
+  return fetch(`https://restcountries.com/v2/name/${name}`)
+    .then(response => {
+      if (response.ok) return response.json();
+      throw new Error('Error fetching data');
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 }
 
 function delAlert() {
@@ -24,8 +32,7 @@ function delAlert() {
   pnotify.style.opacity = 0;
 }
 
-let ul = document.createElement('ul');
-cardContainer.append(ul);
+const ul = document.querySelector('.list-item');
 
 function addCountry(country) {
   const markup = countryCardTpl(country);
@@ -60,13 +67,6 @@ function addCountry(country) {
     function createListItemsMarkup(items) {
       return items.map(item => `<li>${item.name}</li>`).join('');
     }
-
-    // function onFilterChange(evt) {
-    // const filter = evt.target.value.toLowerCase();
-    //   const filteredItems = country.filter(t => t.name.toLowerCase().includes(filter));
-    //   const listItemsMarkup = createListItemsMarkup(filteredItems);
-    //   ul.innerHTML = listItemsMarkup;
-    // }
   }
 }
 
@@ -78,7 +78,6 @@ function onSearch(e) {
   if (searchQuery.length === 0) {
     cardContainer.innerHTML = '';
     delAlert();
-
   } else {
     fetchCountry(searchQuery)
       .then(addCountry)
